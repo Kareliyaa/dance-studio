@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dance Space Studio | Вінниця</title>
+    <style>
+        /* Базові налаштування та неонові кольори */
+        :root {
+            --primary: #8a2be2;
+            --secondary: #ff1493;
+            --dark-bg: #0a0a0f;
+            --card-bg: #151520;
+            --text-main: #f0f0f5;
+            --text-muted: #a0a0b5;
+            --neon-glow: 0 0 15px rgba(138, 43, 226, 0.5);
+            --neon-glow-pink: 0 0 15px rgba(255, 20, 147, 0.5);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* Анімації при скролі (класи для JS) */
+        .hidden { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .show { opacity: 1; transform: translateY(0); }
+
+        /* Навігація - Glassmorphism */
+        nav {
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .logo {
+            color: white;
+            font-size: 26px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-shadow: var(--neon-glow);
+        }
+        .logo span { color: var(--secondary); text-shadow: var(--neon-glow-pink); }
+        
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--secondary); text-shadow: var(--neon-glow-pink); }
+
+        /* Головний екран (Hero) */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(10, 10, 15, 0.8), rgba(10, 10, 15, 0.9)), 
+                        url('https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 5em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { filter: drop-shadow(0 0 10px rgba(138,43,226,0.4)); }
+            100% { filter: drop-shadow(0 0 20px rgba(255,20,147,0.6)); }
+        }
+
+        .hero p {
+            font-size: 1.4em;
+            max-width: 700px;
+            margin-bottom: 40px;
+            color: var(--text-muted);
+        }
+
+        /* Кнопки */
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            font-size: 1.1em;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--neon-glow);
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        /* Загальні стилі секцій */
+        section { padding: 100px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 60px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .section-title span { color: var(--primary); }
+
+        /* Про нас */
+        .about-text {
+            text-align: center;
+            font-size: 1.3em;
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            border-left: 4px solid var(--secondary);
+            padding-left: 20px;
+            background: rgba(255,255,255,0.02);
+            padding: 30px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        /* Напрямки (Грід) */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        
+        .class-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            transition: all 0.4s;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .class-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+            transform-origin: left;
+        }
+
+        .class-card:hover { transform: translateY(-10px); box-shadow: var(--neon-glow); }
+        .class-card:hover::before { transform: scaleX(1); }
+        
+        .class-card h3 { color: white; font-size: 1.6em; margin-bottom: 15px; }
+        .class-card p { color: var(--text-muted); font-size: 1.05em; margin-bottom: 20px; }
+        
+        .target-audience {
+            display: inline-block;
+            background: rgba(138, 43, 226, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: var(--secondary);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+        }
+
+        /* Переваги */
+        .advantages { background-color: #050508; }
+        .adv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+        .adv-item {
+            padding: 30px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .adv-item:hover { background: rgba(255,255,255,0.05); transform: scale(1.05); }
+        .adv-item h4 { color: white; font-size: 1.3em; margin: 20px 0 10px; }
+        .adv-icon { font-size: 3.5em; filter: drop-shadow(0 0 10px rgba(138,43,226,0.5)); }
+
+        /* Ціни */
+        .pricing-wrap { display: flex; justify-content: center; }
+        .price-list {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 50px;
+            width: 100%;
+            max-width: 700px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: var(--neon-glow);
+        }
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            font-size: 1.2em;
+        }
+        .price-item:last-child { border-bottom: none; }
+        .price-name { font-weight: 500; color: #ddd; }
+        .price-value { color: var(--secondary); font-weight: 800; font-size: 1.3em; text-shadow: var(--neon-glow-pink); }
+
+        /* Контакти */
+        .contact-info {
+            text-align: center;
+            font-size: 1.3em;
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .contact-info p { margin-bottom: 20px; color: var(--text-muted); }
+        .contact-info strong { color: white; }
+
+        /* Підвал (Footer) */
+        footer {
+            background-color: #050508;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 2px solid var(--primary);
+            font-size: 1em;
+        }
+        footer .student-info {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+        
+        /* Спливаюче вікно (Modal) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 40px;
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--neon-glow);
+            position: relative;
+            animation: modalFadeIn 0.4s;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            color: white; font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-btn:hover { color: var(--secondary); }
+        .modal-content input {
+            width: 100%; padding: 15px; margin: 10px 0;
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05); color: white;
+        }
+
+        /* Адаптивність */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3em; }
+            .nav-links { display: none; }
+            section { padding: 60px 20px; }
+            nav { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навігація -->
+    <nav>
+        <a href="#" class="logo">Dance Space <span>Studio</span></a>
+        <div class="nav-links">
+            <a href="#about">Про студію</a>
+            <a href="#classes">Напрямки</a>
+            <a href="#advantages">Переваги</a>
+            <a href="#pricing">Ціни</a>
+            <a href="#contact">Контакти</a>
+        </div>
+    </nav>
+
+    <!-- Головний екран -->
+    <header class="hero">
+        <h1 class="hidden">Твій простір для руху</h1>
+        <p class="hidden">Навчаємо сучасним танцям дітей, підлітків та дорослих у Вінниці. Комфортний простір, де рух стає мистецтвом.</p>
+        <button class="btn hidden" onclick="openModal()">Записатися на пробне - 100 грн</button>
+    </header>
+
+    <!-- Про студію -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title hidden">Про <span>нас</span></h2>
+            <p class="about-text hidden">
+                <strong>Dance Space Studio</strong> — це доступний та комфортний простір у Вінниці, де кожен може навчитися танцювати незалежно від початкового рівня підготовки. Ми створюємо дружню атмосферу, об'єднуючи фізичні навантаження, творчість та соціальну взаємодію.
+            </p>
+        </div>
+    </section>
+
+    <!-- Напрямки -->
+    <section id="classes" style="background-color: #0d0d14;">
+        <div class="container">
+            <h2 class="section-title hidden">Наші <span>напрямки</span></h2>
+            <div class="classes-grid">
+                
+                <div class="class-card hidden">
+                    <h3>Дитяча хореографія</h3>
+                    <p>Розвиток ритмічності, координації та базових танцювальних навичок у веселій формі.</p>
+                    <span class="target-audience">Діти 4-7 років</span>
+                </div>
+
+                <div class="class-card hidden">
+                    <h3>Hip-Hop</h3>
+                    <p>Сучасний енергійний вуличний танець. Вивчення бази, качу та музикальності.</p>
+                    <span class="target-audience">Діти, підлітки, дорослі</span>
+                </div>
+
+                <div class="class-card hidden">
+                    <h3>Contemporary</h3>
+                    <p>Напрям, який поєднує сучасну хореографію, пластичність тіла та елементи імпровізації.</p>
+                    <span class="target-audience">Підлітки та дорослі</span>
+                </div>
+
+                <div class="class-card hidden">
+                    <h3>Dance Choreo</h3>
+                    <p>Вивчення готових яскравих хореографічних комбінацій під найсучаснішу музику.</p>
+                    <span class="target-audience">Від 13 років</span>
+                </div>
+
+                <div class="class-card hidden">
+                    <h3>Stretching</h3>
+                    <p>Заняття з розвитку гнучкості, розслаблення м'язів, поліпшення рухливості та постави.</p>
+                    <span class="target-audience">Для всіх рівнів</span>
+                </div>
+
+                <div class="class-card hidden">
+                    <h3>Індивідуальні заняття</h3>
+                    <p>Персональна робота з тренером: постановка весільного танцю, підготовка до виступу.</p>
+                    <span class="target-audience">Персонально</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Переваги -->
+    <section id="advantages" class="advantages">
+        <div class="container">
+            <h2 class="section-title hidden">Чому <span>обирають нас?</span></h2>
+            <div class="adv-grid">
+                <div class="adv-item hidden">
+                    <div class="adv-icon">👥</div>
+                    <h4>Невеликі групи</h4>
+                    <p>Приділяємо персональну увагу кожному учню для досягнення найкращого результату.</p>
+                </div>
+                <div class="adv-item hidden">
+                    <div class="adv-icon">🕒</div>
+                    <h4>Гнучкий розклад</h4>
+                    <p>Заняття в ранковий, денний та вечірній час. Зручне перенесення тренувань.</p>
+                </div>
+                <div class="adv-item hidden">
+                    <div class="adv-icon">🛡️</div>
+                    <h4>Безпека та комфорт</h4>
+                    <p>Наявність укриття поблизу та резервного електроживлення для безперебійних занять.</p>
+                </div>
+                <div class="adv-item hidden">
+                    <div class="adv-icon">📱</div>
+                    <h4>Зручний сервіс</h4>
+                    <p>Прозорий онлайн-запис, швидка підтримка в месенджерах та нагадування.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ціни -->
+    <section id="pricing" style="background-color: #0d0d14;">
+        <div class="container">
+            <h2 class="section-title hidden">Вартість <span>занять</span></h2>
+            <div class="pricing-wrap hidden">
+                <div class="price-list">
+                    <div class="price-item">
+                        <span class="price-name">Пробне заняття</span>
+                        <span class="price-value">100 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Разове групове заняття</span>
+                        <span class="price-value">250 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Абонемент на 4 заняття</span>
+                        <span class="price-value">900 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Абонемент на 8 занять (Стандарт)</span>
+                        <span class="price-value">1 600 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Абонемент на 12 занять</span>
+                        <span class="price-value">2 100 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Індивідуальне заняття</span>
+                        <span class="price-value">600 грн</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-name">Майстер-клас (тематичний)</span>
+                        <span class="price-value">350 грн</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Контакти -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title hidden">Чекаємо на <span>тренуваннях</span></h2>
+            <div class="contact-info hidden">
+                <p>📍 <strong>Локація:</strong> м. Вінниця</p>
+                <p>📞 <strong>Телефон:</strong> +380 (96) 517 62 31</p>
+                <p>📧 <strong>Email:</strong> k.mordvaniuk_femp_16_24_b_d@knute.edu.ua</p>
+                <p>📱 <strong>Instagram:</strong> @dancespace_vn</p>
+                <br>
+                <a href="https://instagram.com" target="_blank" class="btn">Написати в Direct</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Обов'язковий підвал для лабораторної роботи -->
+    <footer>
+        <div class="student-info">&copy; Каріна Мордванюк 2026, k.mordvaniuk_femp_16_24_b_d@knute.edu.ua</div>
+        <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.6;">
+            Цей сайт розроблено в рамках виконання лабораторної роботи №5.
+        </p>
+    </footer>
+
+    <!-- Спливаюче вікно форми -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 style="color: white; margin-bottom: 20px;">Запис на пробне</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Залиште контакти, і ми напишемо вам для підтвердження часу.</p>
+            <input type="text" placeholder="Ваше ім'я">
+            <input type="text" placeholder="Ваш телефон або Telegram">
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="closeModal()">Відправити</button>
+        </div>
+    </div>
+
+    <!-- Скрипт для анімацій та спливаючого вікна -->
+    <script>
+        // Анімація появи елементів при скролі
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        });
+
+        const hiddenElements = document.querySelectorAll('.hidden');
+        hiddenElements.forEach((el) => observer.observe(el));
+
+        // Логіка спливаючого вікна (Modal)
+        const modal = document.getElementById("bookingModal");
+
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Закриття вікна при кліку поза ним
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
